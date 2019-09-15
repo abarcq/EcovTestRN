@@ -32,5 +32,14 @@ export const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         alignItems: 'center',
+    },
+    error: {
+        backgroundColor: colors.error,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center'
+    },
+    errorIcon: {
+        margin: 13,
     }
 })

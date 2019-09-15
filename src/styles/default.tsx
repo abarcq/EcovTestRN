@@ -2,7 +2,8 @@ import { StyleSheet, Dimensions } from 'react-native';
 
 export const colors = {
     font: '#3383B2',
-    label: '#FFFFFF'
+    label: '#FFFFFF',
+    error: '#d32f30',
 }
 
 export const dimensions = {
