@@ -40,6 +40,9 @@ export const styles = StyleSheet.create({
         alignItems: 'center'
     },
     errorIcon: {
-        margin: 13,
+        margin: 12.15,
+    },
+    errorLibel:{
+        width: (dimensions.width - 100),
     }
 })

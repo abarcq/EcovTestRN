@@ -20,5 +20,11 @@ export const styles = StyleSheet.create({
         elevation: 0,
         backgroundColor: colors.font,
     },
-    label: { color: colors.label }
+    label: { 
+        color: colors.label 
+    },
+    error: {
+        borderColor: colors.error,
+        color: colors.error 
+    }
 })
