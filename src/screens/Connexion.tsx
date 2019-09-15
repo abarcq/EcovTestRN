@@ -1,90 +1,144 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
-import CodeInput from 'react-native-confirmation-code-input';
+
+import Informations from '../components/informations';
+import NumberInput from '../components/phoneInput';
+import { sendSms, confirmationCode } from '../services/inscription';
 
 import { styles as defaultStyles } from '../styles/default';
 import { styles as connexionStyles } from '../styles/connexion';
+import CodeComponent from '../components/codeInput';
 
 interface Props {
   navigation: NavigationScreenProp<any, any>
 }
 
+interface Error {
+  type: String,
+  text: String,
+}
+
 interface State {
-  number: String,
-  code: String,
-  error: String,
+  phone: String,
+  error: Error,
+  validation: String,
 }
 
 export default class ConnexionScreen extends React.Component<Props, State> {
 
   state = {
-    number: '',
-    code: '',
-    error: '',
+    phone: '',
+    error: {
+      type: '',
+      text: ''
+    },
+    validation: ''
   }
 
-  checkNumberLength = (number: string) => {
+  setValues = (values, action) => {
     this.setState({
-      number
+      ...values
     }, () => {
-      number = number.replace('+33', '0')
-      if (number.length === 10) {
-        if (parseInt(number, 10) !== NaN && parseInt(number[0], 10) === 0 &&
-          (parseInt(number[1], 10) === 6 || parseInt(number[1], 10) === 7)) {
-          this.sendSMS()
-        } else {
-          this.setState({
-            error: 'Numéro de téléphone incorrrect'
-          })
-        }
+      if (action !== undefined) {
+        action()
       }
     })
   }
 
-  sendSMS = () => {
-    // TODO
+  initState = () => {
+    this.setState({
+      error: {
+        type: '',
+        text: ''
+      },
+      validation: ''
+    })
+  }
+
+  sendSMS = async () => {
+    const { phone, error } = this.state
+    if (phone.length >= 10 && error.type !== 'phone') {
+      sendSms(phone)
+        .then(() => {
+          this.setValues({
+            validation: 'Le SMS vous a bien été envoyé'
+          }, () => {
+            setTimeout(
+              () => {
+                this.initState()
+              }, 5000)
+          })
+        })
+        .catch(error => {
+          this.setState({
+            error: {
+              type: 'API',
+              text: 'Problème d\'envoie du SMS. Touchez "renvoyer le code" pour réessayer'
+            }
+          })
+        })
+    }
+  }
+
+  confirmationCode = async (code) => {
+    const { phone } = this.state
+    this.initState()
+    confirmationCode(phone, code)
+      .then(() => {
+        this.setValues({
+          validation: 'Le code affiché est identique à celui qui vous a été envoyé'
+        }, () => {
+          setTimeout(
+            () => {
+              this.initState()
+            }, 5000)
+        })
+      })
+      .catch(error => {
+        if(error==='phone'){
+          this.setState({
+            error: {
+              type: 'phone',
+              text: 'saisissez votre numéro de téléphone avant votre code'
+            }
+          })
+        }else{
+          this.setState({
+            error: {
+              type: 'API',
+              text: 'Code incorrect. Touchez "renvoyer le code" si vous n\'avez rien reçu'
+            }
+          })
+        }
+      })
   }
 
   render() {
+    const { error, phone, validation } = this.state;
     return (
       <View style={[defaultStyles.background]}>
         <View style={[connexionStyles.element]}>
           <Text style={[defaultStyles.label, connexionStyles.label]} >
             Numéro de téléphone
           </Text>
-          <TextInput
-            placeholder="+33XXXXXXXXX"
-            autoFocus
-            dataDetectorTypes="phoneNumber"
-            keyboardType="phone-pad"
-            maxLength={12}
-            textContentType="telephoneNumber"
-            value={this.state.number}
-            onChangeText={(number) => this.checkNumberLength(number)}
-            style={[defaultStyles.label, connexionStyles.phone]}
+          <NumberInput
+            phone={phone}
+            setValues={this.setValues}
+            sendSMS={this.sendSMS}
+            initError={this.initState}
+            error={error.type}
           />
         </View>
         <View style={[connexionStyles.element]}>
           <Text style={[defaultStyles.label, connexionStyles.label]} >
             Code de confirmation reçu par SMS
           </Text>
-          <CodeInput
-            ref="codeInputRef1"
-            keyboardType="numeric"
-            inputPosition="left"
-            codeLength={4}
-            autoFocus={false}
-            space={7}
-            size={40}
-            containerStyle={connexionStyles.code}
-            codeInputStyle={connexionStyles.codeInput}
-            onFulfill={(code) => console.log(code)}
-          />
+          <CodeComponent sendCode={this.confirmationCode} error={error.type} />
         </View>
-        <View style={[connexionStyles.element]}></View>
+        <Informations error={error.text} validation={validation} />
         <View style={[{ alignItems: 'center', }]}>
-          <TouchableOpacity style={connexionStyles.button}>
+          <TouchableOpacity style={connexionStyles.button} onPress={() => this.sendSMS()}>
             <Text style={[defaultStyles.label]} >Renvoyer le SMS</Text>
           </TouchableOpacity>
         </View>

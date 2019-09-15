@@ -2,7 +2,9 @@ import { StyleSheet, Dimensions } from 'react-native';
 
 export const colors = {
     font: '#3383B2',
-    label: '#FFFFFF'
+    label: '#FFFFFF',
+    error: '#d32f30',
+    validation: '#3ca745',
 }
 
 export const dimensions = {
@@ -19,5 +21,11 @@ export const styles = StyleSheet.create({
         elevation: 0,
         backgroundColor: colors.font,
     },
-    label: { color: colors.label }
+    label: { 
+        color: colors.label 
+    },
+    error: {
+        borderColor: colors.error,
+        color: colors.error 
+    }
 })

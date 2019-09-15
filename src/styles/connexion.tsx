@@ -10,21 +10,6 @@ export const styles = StyleSheet.create({
     label: {
         marginVertical: 10,
     },
-    code: {
-        marginTop: 0
-    },
-    codeInput: {
-        backgroundColor: colors.label,
-        color: colors.font,
-        borderRadius: 3
-    },
-    phone: {
-        borderColor: '#45a5c6',
-        borderWidth: 1,
-        width: (dimensions.width - 50),
-        padding: 10,
-        borderRadius: 3
-    },
     button: {
         width: 180,
         padding: 10,
@@ -32,5 +17,5 @@ export const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         alignItems: 'center',
-    }
+    },
 })
