@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { styles as defaultStyles } from '../styles/default';
 import { styles as connexionStyles } from '../styles/connexion';
+import { styles as informationsStyles } from '../styles/informations';
 
 interface Props {
     error: string,
@@ -19,16 +20,16 @@ export default class ErrorComponent extends React.Component<Props,null> {
             <View style={[connexionStyles.element]} >
                 {
                     error !== '' &&
-                    <View style={[connexionStyles.information,connexionStyles.error]}>
-                        <Ionicons name="md-close-circle" size={30} color="white" style={connexionStyles.informationIcon} />
-                        <Text style={[defaultStyles.label, connexionStyles.informationLibel]}>{error}</Text>
+                    <View style={[informationsStyles.information,informationsStyles.error]}>
+                        <Ionicons name="md-close-circle" size={30} color="white" style={informationsStyles.informationIcon} />
+                        <Text style={[defaultStyles.label, informationsStyles.informationLibel]}>{error}</Text>
                     </View>
                 }
                 {
                     validation !== '' &&
-                    <View style={[connexionStyles.information, connexionStyles.validation]}>
-                        <Ionicons name="md-checkmark-circle" size={30} color="white" style={connexionStyles.informationIcon} />
-                        <Text style={[defaultStyles.label, connexionStyles.informationLibel]}>{validation}</Text>
+                    <View style={[informationsStyles.information, informationsStyles.validation]}>
+                        <Ionicons name="md-checkmark-circle" size={30} color="white" style={informationsStyles.informationIcon} />
+                        <Text style={[defaultStyles.label, informationsStyles.informationLibel]}>{validation}</Text>
                     </View>
                 }
             </View>

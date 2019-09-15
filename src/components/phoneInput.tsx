@@ -4,11 +4,11 @@ import { TextInput } from 'react-native';
 import { PHONE_REGEX } from '../constantes';
 
 import { styles as defaultStyles } from '../styles/default';
-import { styles as connexionStyles } from '../styles/connexion';
+import { styles as phoneStyles } from '../styles/phoneInput';
 
 
 interface Props {
-    number: string,
+    phone: string,
     setValues: Function,
     sendSMS: Function,
     initError: Function,
@@ -16,21 +16,21 @@ interface Props {
 }
 
 
-export default class NumberInput extends React.Component<Props> {
+export default class PhoneInput extends React.Component<Props> {
 
-    checkNumberLength = (number: string) => {
+    checkPhoneLength = (phone: string) => {
         this.props.setValues({
-          number
+          phone
         }, () => {
-          number = number.replace('+33', '0')
-          if (number.length >= 10) {
-            if (number.match(PHONE_REGEX) !== null && (parseInt(number[1], 10) === 6 || parseInt(number[1], 10) === 7)) {
+          phone = phone.replace('+33', '0')
+          if (phone.length >= 10) {
+            if (phone.match(PHONE_REGEX) !== null && (parseInt(phone[1], 10) === 6 || parseInt(phone[1], 10) === 7)) {
               this.props.sendSMS()
               this.props.initError()
             } else {
                 this.props.setValues({
                 error: {
-                  type: 'number',
+                  type: 'phone',
                   text: 'Numéro de téléphone incorrrect'
                 }
               })
@@ -42,9 +42,9 @@ export default class NumberInput extends React.Component<Props> {
       }
 
     render() {
-        const { number, error } = this.props
-        let styles = [defaultStyles.label, connexionStyles.phone]
-            if(error === 'number'){
+        const { phone, error } = this.props
+        let styles = [defaultStyles.label, phoneStyles.phone]
+            if(error === 'phone'){
                 styles.push(defaultStyles.error)
             }
         return (
@@ -55,8 +55,8 @@ export default class NumberInput extends React.Component<Props> {
                 keyboardType="phone-pad"
                 maxLength={12}
                 textContentType="telephoneNumber"
-                value={number}
-                onChangeText={(number) => this.checkNumberLength(number)}
+                value={phone}
+                onChangeText={(phone) => this.checkPhoneLength(phone)}
                 style={styles}
             />
         )

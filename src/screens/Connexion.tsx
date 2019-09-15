@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 
 import Informations from '../components/informations';
-import NumberInput from '../components/numberInput';
+import NumberInput from '../components/phoneInput';
 import { sendSms, confirmationCode } from '../services/inscription';
 
 import { styles as defaultStyles } from '../styles/default';
@@ -20,7 +20,7 @@ interface Error {
 }
 
 interface State {
-  number: String,
+  phone: String,
   error: Error,
   validation: String,
 }
@@ -28,7 +28,7 @@ interface State {
 export default class ConnexionScreen extends React.Component<Props, State> {
 
   state = {
-    number: '',
+    phone: '',
     error: {
       type: '',
       text: ''
@@ -57,9 +57,9 @@ export default class ConnexionScreen extends React.Component<Props, State> {
   }
 
   sendSMS = async () => {
-    const { number, error } = this.state
-    if (number.length >= 10 && error.type !== 'number') {
-      sendSms(number)
+    const { phone, error } = this.state
+    if (phone.length >= 10 && error.type !== 'phone') {
+      sendSms(phone)
         .then(() => {
           this.setValues({
             validation: 'Le SMS vous a bien été envoyé'
@@ -81,10 +81,10 @@ export default class ConnexionScreen extends React.Component<Props, State> {
     }
   }
 
-  sendCode = async (code) => {
-    const { number } = this.state
+  confirmationCode = async (code) => {
+    const { phone } = this.state
     this.initState()
-    confirmationCode(number, code)
+    confirmationCode(phone, code)
       .then(() => {
         this.setValues({
           validation: 'Le code affiché est identique à celui qui vous a été envoyé'
@@ -115,7 +115,7 @@ export default class ConnexionScreen extends React.Component<Props, State> {
   }
 
   render() {
-    const { error, number, validation } = this.state;
+    const { error, phone, validation } = this.state;
     return (
       <View style={[defaultStyles.background]}>
         <View style={[connexionStyles.element]}>
@@ -123,7 +123,7 @@ export default class ConnexionScreen extends React.Component<Props, State> {
             Numéro de téléphone
           </Text>
           <NumberInput
-            number={number}
+            phone={phone}
             setValues={this.setValues}
             sendSMS={this.sendSMS}
             initError={this.initState}
@@ -134,7 +134,7 @@ export default class ConnexionScreen extends React.Component<Props, State> {
           <Text style={[defaultStyles.label, connexionStyles.label]} >
             Code de confirmation reçu par SMS
           </Text>
-          <CodeComponent sendCode={this.sendCode} error={error.type} />
+          <CodeComponent sendCode={this.confirmationCode} error={error.type} />
         </View>
         <Informations error={error.text} validation={validation} />
         <View style={[{ alignItems: 'center', }]}>

@@ -3,6 +3,7 @@ import CodeInput from 'react-native-confirmation-code-input';
 
 import { styles as defaultStyles } from '../styles/default';
 import { styles as connexionStyles } from '../styles/connexion';
+import { styles as codeInputStyles } from '../styles/codeInput';
 
 interface Props {
     sendCode: Function,
@@ -20,7 +21,7 @@ export default class CodeComponent extends React.Component<Props> {
     if(error === 'API'){
         styles.push(defaultStyles.error)
     }
-    styles.push(connexionStyles.codeInput)
+    styles.push(codeInputStyles.codeInput)
     return (
           <CodeInput
             ref="codeInputRef1"
@@ -30,7 +31,7 @@ export default class CodeComponent extends React.Component<Props> {
             autoFocus={false}
             space={7}
             size={40}
-            containerStyle={connexionStyles.code}
+            containerStyle={codeInputStyles.code}
             codeInputStyle={styles}
             onFulfill={(code) => this.props.sendCode(code)}
           />
