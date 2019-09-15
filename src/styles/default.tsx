@@ -4,6 +4,7 @@ export const colors = {
     font: '#3383B2',
     label: '#FFFFFF',
     error: '#d32f30',
+    validation: '#3ca745',
 }
 
 export const dimensions = {
