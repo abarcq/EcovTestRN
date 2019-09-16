@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { TextInput } from 'react-native';
 
 import { PHONE_REGEX } from '../constantes';
@@ -8,58 +8,65 @@ import { styles as phoneStyles } from '../styles/phoneInput';
 
 
 interface Props {
-    phone: string,
-    setValues: Function,
-    sendSMS: Function,
-    initError: Function,
-    error: string,
+  phone: string,
+  setValues: Function,
+  sendSMS: Function,
+  initError: Function,
+  error: string,
 }
 
+function hasPhone(phone) {
+  return (phone.length === 10 && phone[0] !== '+') || phone.length === 12
+}
 
-export default class PhoneInput extends React.Component<Props> {
+function validePhone(phone) {
+  if (parseInt(phone[0], 10) === 0) {
+    return phone.match(PHONE_REGEX) !== null && (parseInt(phone[1], 10) === 6 || parseInt(phone[1], 10) === 7)
+  } else {
+    return phone.match(PHONE_REGEX) !== null && (parseInt(phone[3], 10) === 6 || parseInt(phone[3], 10) === 7)
+  }
+}
 
-    checkPhoneLength = (phone: string) => {
-        this.props.setValues({
-          phone
-        }, () => {
-          phone = phone.replace('+33', '0')
-          if (phone.length >= 10) {
-            if (phone.match(PHONE_REGEX) !== null && (parseInt(phone[1], 10) === 6 || parseInt(phone[1], 10) === 7)) {
-              this.props.sendSMS()
-              this.props.initError()
-            } else {
-                this.props.setValues({
-                error: {
-                  type: 'phone',
-                  text: 'Numéro de téléphone incorrrect'
-                }
-              })
-            }
-          } else {
-            this.props.initError()
+function checkPhoneLength(phone: string, props: Props) {
+  props.setValues({
+    phone
+  }, () => {
+    if (hasPhone(phone)) {
+      if (validePhone(phone)) {
+        props.sendSMS()
+        props.initError()
+      } else {
+        props.setValues({
+          error: {
+            type: 'phone',
+            text: 'Numéro de téléphone incorrrect'
           }
         })
       }
-
-    render() {
-        const { phone, error } = this.props
-        let styles = [defaultStyles.label, phoneStyles.phone]
-            if(error === 'phone'){
-                styles.push(defaultStyles.error)
-            }
-        return (
-            <TextInput
-                placeholder="+33XXXXXXXXX"
-                autoFocus
-                dataDetectorTypes="phoneNumber"
-                keyboardType="phone-pad"
-                maxLength={12}
-                textContentType="telephoneNumber"
-                value={phone}
-                onChangeText={(phone) => this.checkPhoneLength(phone)}
-                style={styles}
-            />
-        )
+    } else {
+      props.initError()
     }
+  })
+}
 
+
+export const PhoneInput: FunctionComponent<Props> = (props) => {
+  const { phone, error } = props
+  let styles = [defaultStyles.label, phoneStyles.phone]
+  if (error === 'phone') {
+    styles.push(defaultStyles.error)
+  }
+  return (
+    <TextInput
+      placeholder="+33XXXXXXXXX"
+      autoFocus
+      dataDetectorTypes="phoneNumber"
+      keyboardType="phone-pad"
+      maxLength={12}
+      textContentType="telephoneNumber"
+      value={phone}
+      onChangeText={(phone) => checkPhoneLength(phone, props)}
+      style={styles}
+    />
+  )
 }

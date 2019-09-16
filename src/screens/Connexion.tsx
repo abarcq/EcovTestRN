@@ -2,13 +2,15 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 
-import Informations from '../components/informations';
-import NumberInput from '../components/phoneInput';
 import { sendSms, confirmationCode } from '../services/inscription';
+
+import { Informations } from '../components/informations';
+import { PhoneInput } from '../components/phoneInput';
+import { CodeComponent } from '../components/codeInput';
+import { InputComponent } from '../components/inputComponent';
 
 import { styles as defaultStyles } from '../styles/default';
 import { styles as connexionStyles } from '../styles/connexion';
-import CodeComponent from '../components/codeInput';
 
 interface Props {
   navigation: NavigationScreenProp<any, any>
@@ -26,6 +28,10 @@ interface State {
 }
 
 export default class ConnexionScreen extends React.Component<Props, State> {
+
+  static navigationOptions = {
+    title: 'Créez votre compte',
+  };
 
   state = {
     phone: '',
@@ -56,28 +62,28 @@ export default class ConnexionScreen extends React.Component<Props, State> {
     })
   }
 
-  sendSMS = async () => {
+  sendSMSAPI = async () => {
     const { phone, error } = this.state
     if (phone.length >= 10 && error.type !== 'phone') {
-      sendSms(phone)
-        .then(() => {
-          this.setValues({
-            validation: 'Le SMS vous a bien été envoyé'
-          }, () => {
-            setTimeout(
-              () => {
-                this.initState()
-              }, 5000)
-          })
+      try {
+        await sendSms(phone)
+        this.setValues({
+          validation: 'Le SMS vous a bien été envoyé'
+        }, () => {
+          setTimeout(
+            () => {
+              this.initState()
+            }, 5000)
         })
-        .catch(error => {
-          this.setState({
-            error: {
-              type: 'API',
-              text: 'Problème d\'envoie du SMS. Touchez "renvoyer le code" pour réessayer'
-            }
-          })
+      }
+      catch (error) {
+        this.setState({
+          error: {
+            type: 'API',
+            text: 'Problème d\'envoie du SMS. Touchez "renvoyer le code" pour réessayer'
+          }
         })
+      }
     }
   }
 
@@ -96,14 +102,14 @@ export default class ConnexionScreen extends React.Component<Props, State> {
         })
       })
       .catch(error => {
-        if(error==='phone'){
+        if (error === 'phone') {
           this.setState({
             error: {
               type: 'phone',
               text: 'saisissez votre numéro de téléphone avant votre code'
             }
           })
-        }else{
+        } else {
           this.setState({
             error: {
               type: 'API',
@@ -118,27 +124,21 @@ export default class ConnexionScreen extends React.Component<Props, State> {
     const { error, phone, validation } = this.state;
     return (
       <View style={[defaultStyles.background]}>
-        <View style={[connexionStyles.element]}>
-          <Text style={[defaultStyles.label, connexionStyles.label]} >
-            Numéro de téléphone
-          </Text>
-          <NumberInput
+        <InputComponent label="Numéro de téléphone">
+          <PhoneInput
             phone={phone}
             setValues={this.setValues}
-            sendSMS={this.sendSMS}
+            sendSMS={this.sendSMSAPI}
             initError={this.initState}
             error={error.type}
           />
-        </View>
-        <View style={[connexionStyles.element]}>
-          <Text style={[defaultStyles.label, connexionStyles.label]} >
-            Code de confirmation reçu par SMS
-          </Text>
+        </InputComponent>
+        <InputComponent label="Code de confirmation reçu par SMS">
           <CodeComponent sendCode={this.confirmationCode} error={error.type} />
-        </View>
+        </InputComponent>
         <Informations error={error.text} validation={validation} />
         <View style={[{ alignItems: 'center', }]}>
-          <TouchableOpacity style={connexionStyles.button} onPress={() => this.sendSMS()}>
+          <TouchableOpacity style={connexionStyles.button} onPress={() => this.sendSMSAPI()}>
             <Text style={[defaultStyles.label]} >Renvoyer le SMS</Text>
           </TouchableOpacity>
         </View>
