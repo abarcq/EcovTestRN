@@ -5,6 +5,12 @@ import ConnexionScreen from './screens/Connexion';
 import HomeScreen from './screens/Home';
 import { styles, colors } from './styles/default';
 
+const navigationOptions = () => ({
+  headerStyle: styles.header,
+  headerTintColor: colors.label,
+  headerTitleStyle: styles.label
+})
+
 const AppNavigator = createStackNavigator(
   {
     Home: {
@@ -15,12 +21,7 @@ const AppNavigator = createStackNavigator(
     },
     Connexion: {
       screen: ConnexionScreen,
-      navigationOptions: () => ({
-        title: 'Créez votre compte',
-        headerStyle: styles.header,
-        headerTintColor: colors.label,
-        headerTitleStyle: styles.label
-      }),
+      navigationOptions,
     },
   },
   {
